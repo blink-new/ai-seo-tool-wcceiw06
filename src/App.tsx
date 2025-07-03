@@ -19,19 +19,12 @@ function App() {
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null)
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const userData = await blink.auth.me()
-        setUser(userData)
-      } catch (error) {
-        console.error('Auth error:', error)
-        // If not authenticated, Blink will redirect automatically
-      } finally {
-        setLoading(false)
-      }
-    }
+    const unsubscribe = blink.auth.onAuthStateChanged((state) => {
+      setUser(state.user)
+      setLoading(false)
+    })
 
-    initAuth()
+    return () => unsubscribe()
   }, [])
 
   if (loading) {
